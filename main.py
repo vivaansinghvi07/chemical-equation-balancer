@@ -217,4 +217,15 @@ def __show_parens(molecule: str) -> str:
 if __name__ == "__main__":
     equation = input("Enter chemical equation in the format \"A + B -> C + D\": ")
     result = balance_equation(equation)
-    
+
+    # formats to string
+    equation = equation.split("->")
+    reactants = " + ".join([str(result[r:=reactant.strip()]) + r for reactant in equation[0].split("+")])
+    products = " + ".join([str(result[p:=product.strip()]) + p for product in equation[1].split("+")])
+    output_str = " " + reactants + " -> " + products
+    output = list(output_str)
+
+    # removes 1 coefficients and prints
+    for match in reversed([*re.finditer(r' 1[A-Z]+', f" {output_str}")]):
+        output[(m:=match.span()[0]):m+1] = []   # clear the one
+    print("".join(output).strip())
