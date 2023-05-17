@@ -1,4 +1,5 @@
 from sympy import symbols, Eq, solve
+from pynterface import clear_print, Color, clear_window
 import math
 import re
 
@@ -215,17 +216,20 @@ def __show_parens(molecule: str) -> str:
     return molecule.replace(PAREN_OPEN, "(").replace(PAREN_CLOSE, ")")
 
 if __name__ == "__main__":
+
+    # get the answer
+    clear_window()
     equation = input("Enter chemical equation in the format \"A + B -> C + D\": ")
     result = balance_equation(equation)
 
     # formats to string
     equation = equation.split("->")
-    reactants = " + ".join([str(result[r:=reactant.strip()]) + r for reactant in equation[0].split("+")])
-    products = " + ".join([str(result[p:=product.strip()]) + p for product in equation[1].split("+")])
-    output_str = " " + reactants + " -> " + products
-    output = list(output_str)
-
-    # removes 1 coefficients and prints
-    for match in reversed([*re.finditer(r' 1[A-Z]+', f" {output_str}")]):
-        output[(m:=match.span()[0]):m+1] = []   # clear the one
-    print("".join(output).strip())
+    reactants = " + ".join([Color.BLUE + str(result[r:=reactant.strip()]) + Color.RESET_COLOR + r 
+                            for reactant in equation[0].split("+")])
+    products = " + ".join([Color.BLUE + str(result[p:=product.strip()]) + Color.RESET_COLOR + p 
+                           for product in equation[1].split("+")])
+    output = list(" " + reactants + " -> " + products)
+    for match in reversed([*re.finditer(r"\+|->", "".join(output))]):
+        output[m[0]:m[1]] = [Color.RED] + output[(m:=match.span())[0]:m[1]] + [Color.RESET_COLOR]
+        
+    clear_print("".join(output).strip())
