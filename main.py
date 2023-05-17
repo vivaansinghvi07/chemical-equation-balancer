@@ -1,5 +1,5 @@
 from sympy import symbols, Eq, solve
-from pynterface import clear_print, Color, clear_window
+from pynterface import clear_print, Color, clear_window, numbered_menu
 import math
 import re
 
@@ -222,14 +222,27 @@ if __name__ == "__main__":
     equation = input("Enter chemical equation in the format \"A + B -> C + D\": ")
     result = balance_equation(equation)
 
-    # formats to string
-    equation = equation.split("->")
-    reactants = " + ".join([Color.BLUE + str(result[r:=reactant.strip()]) + Color.RESET_COLOR + r 
-                            for reactant in equation[0].split("+")])
-    products = " + ".join([Color.BLUE + str(result[p:=product.strip()]) + Color.RESET_COLOR + p 
-                           for product in equation[1].split("+")])
-    output = list(" " + reactants + " -> " + products)
-    for match in reversed([*re.finditer(r"\+|->", "".join(output))]):
-        output[m[0]:m[1]] = [Color.RED] + output[(m:=match.span())[0]:m[1]] + [Color.RESET_COLOR]
+    option = numbered_menu(options=["Reaction", "Coefficients", "Dictionary"], 
+                           beginning_prompt="\nEnter your desired return type: ")
+
+    if option == "Reaction":
+
+        # formats to string
+        equation = equation.split("->")
+        reactants = " + ".join([Color.BLUE + str(result[r:=reactant.strip()]) + Color.RESET_COLOR + r 
+                                for reactant in equation[0].split("+")])
+        products = " + ".join([Color.BLUE + str(result[p:=product.strip()]) + Color.RESET_COLOR + p 
+                            for product in equation[1].split("+")])
+        output = list(" " + reactants + " -> " + products)
+        for match in reversed([*re.finditer(r"\+|->", "".join(output))]):
+            output[m[0]:m[1]] = [Color.RED] + output[(m:=match.span())[0]:m[1]] + [Color.RESET_COLOR]
         
-    clear_print("".join(output).strip())
+        clear_print("".join(output).strip())
+
+    elif option == "Coefficients":
+
+        clear_print(str(result)[1:-1].replace('\'', ''))    # format dict
+
+    elif option == "Dictionary": 
+
+        clear_print(result)
