@@ -4,8 +4,17 @@ import math
 import re
 
 # certainly not elements
-PAREN_OPEN = "X"    
+PAREN_OPEN = "X" 
 PAREN_CLOSE = "J"    
+BRACK_OPEN = "Q"
+BRACK_CLOSE = "ZZ"
+
+SUBS = {
+    "(": PAREN_OPEN,
+    ")": PAREN_CLOSE,
+    "[": BRACK_OPEN,
+    "]": BRACK_CLOSE
+}
 
 def balance_equation(reaction: str) -> dict:
 
@@ -202,10 +211,9 @@ def __hide_parens(molecule: str) -> str:
     """
     Replaces parentheses with an arbitrary symbol 
     """
-    
-    # performs substitutions
-    molecule = re.sub('[(\[]', PAREN_OPEN, molecule)
-    molecule = re.sub('[)\]]', PAREN_CLOSE, molecule)
+
+    for char, sub in SUBS.items():
+        molecule = molecule.replace(char, sub)
 
     return molecule
 
@@ -213,7 +221,11 @@ def __show_parens(molecule: str) -> str:
     """
     Puts parentheses back from __hide_parens() function.
     """
-    return molecule.replace(PAREN_OPEN, "(").replace(PAREN_CLOSE, ")")
+    
+    for char, sub in SUBS.items():
+        molecule = molecule.replace(sub, char)
+
+    return molecule
 
 if __name__ == "__main__":
 
